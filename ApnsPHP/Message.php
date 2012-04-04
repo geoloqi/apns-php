@@ -14,7 +14,7 @@
  * to aldo.armiento@gmail.com so we can send you a copy immediately.
  *
  * @author (C) 2010 Aldo Armiento (aldo.armiento@gmail.com)
- * @version $Id$
+ * @version $Id: Message.php 104 2011-11-15 10:25:04Z aldo.armiento $
  */
 
 /**
@@ -47,6 +47,8 @@ class ApnsPHP_Message
 
 	protected $_aCustomProperties; /**< @type mixed Custom properties container. */
 
+	protected $_rawPayload; /**< @type string The raw JSON payload to send if constructing the payload manually. */
+
 	protected $_nExpiryValue = 604800; /**< @type integer That message will expire in 604800 seconds (86400 * 7, 7 days) if not successful delivered. */
 
 	protected $_mCustomIdentifier; /**< @type mixed Custom message identifier. */
@@ -56,10 +58,13 @@ class ApnsPHP_Message
 	 *
 	 * @param  $sDeviceToken @type string @optional Recipients device token.
 	 */
-	public function __construct($sDeviceToken = null)
+	public function __construct($sDeviceToken = null, $sPayload = null)
 	{
 		if (isset($sDeviceToken)) {
 			$this->addRecipient($sDeviceToken);
+		}
+		if (isset($sPayload)) {
+			$this->_rawPayload = $sPayload;
 		}
 	}
 
@@ -372,6 +377,10 @@ class ApnsPHP_Message
 	 */
 	public function getPayload()
 	{
+		if ($this->_rawPayload) {
+			return $this->_rawPayload;
+		}
+
 		$sJSONPayload = str_replace(
 			'"' . self::APPLE_RESERVED_NAMESPACE . '":[]',
 			'"' . self::APPLE_RESERVED_NAMESPACE . '":{}',
