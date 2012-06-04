@@ -39,6 +39,8 @@ class ApnsPHP_Push extends ApnsPHP_Abstract
 
 	const STATUS_CODE_INTERNAL_ERROR = 999; /**< @type integer Status code for internal error (not Apple). */
 
+  const ERROR_CHECK_DELAY = 500000;
+
 	protected $_aErrorResponseMessages = array(
 		0   => 'No errors encountered',
 		1   => 'Processing error',
@@ -291,6 +293,8 @@ class ApnsPHP_Push extends ApnsPHP_Abstract
 	 */
 	protected function _readErrorMessage()
 	{
+		if(self::ERROR_CHECK_DELAY)
+			usleep(self::ERROR_CHECK_DELAY);
 		$sErrorResponse = @fread($this->_hSocket, self::ERROR_RESPONSE_SIZE);
 		if ($sErrorResponse === false || strlen($sErrorResponse) != self::ERROR_RESPONSE_SIZE) {
 			return;
